@@ -7,9 +7,10 @@ const ensureAuth = require('../middleware/authmiddleware').ensureAuth;
 const User = require('../user/usermodel').User;
 const cache = require('../../utils/cache');
 const logger = require('../../utils/logger');
+const rateLimit = require('../throttle/throttleservice');
 
 router.get('/allusers', cache.cache(20), function (req, res) {
-        console.log("user ip address = ", req.ip);
+	console.log("user ip address = ", req.ip);
 	let items_perpage = req.query.itemsperpage || 5;
 	let page = req.query.page || 1;
 
@@ -22,7 +23,7 @@ router.get('/allusers', cache.cache(20), function (req, res) {
 			return res.status(500).send({ success: false, msg: 'Internal Server Error' })
 		}
 		else {
-			User.find({},{ "firstname":1, "lastname": 1, "email": 1} ).skip(skip).limit(limit).exec(function (err, allUsers) {
+			User.find({}, { "firstname": 1, "lastname": 1, "email": 1 }).skip(skip).limit(limit).exec(function (err, allUsers) {
 				if (err) {
 					logger.error(err.stack);
 					return res.status(500).send({ success: false, msg: 'Internal Server Error' })
@@ -39,33 +40,33 @@ router.get('/allusers', cache.cache(20), function (req, res) {
 					return res.status(200).send({ success: true, msg: 'All users', total: total, data: allUsers });
 				}
 			});
-		}	
-	})	
+		}
+	})
 
 });
 
-router.get('/searchuser', function (req, res) {
+router.get('/searchuser', rateLimit.limit, function (req, res) {
 
 	let username = req.query.matchelement;
-	if(!username){
+	if (!username) {
 		return res.status(400).send({ success: false, msg: 'Bad Request' })
 	}
-  let regexStr = username.split(/ /).join("|"); 
+	let regexStr = username.split(/ /).join("|");
 
-  User.find({
-    "$or": [
-        { "firstname": { "$regex": regexStr, "$options": 'i' } },
-        { "lastname": { "$regex": regexStr, "$options": 'i' }}
-    ]
-  },{ "firstname":1, "lastname": 1, "email": 1 } ).limit(50).exec(function (err, result) {
-    if (err) {
-      logger.error(err.stack);
-      return res.status(500).send({ success: false, msg: 'Internal Server Error' })
-    }
-    else {
-      return res.status(200).send({ success: true, msg: 'Search Users', data: result });
-    }
-  })
+	User.find({
+		"$or": [
+			{ "firstname": { "$regex": regexStr, "$options": 'i' } },
+			{ "lastname": { "$regex": regexStr, "$options": 'i' } }
+		]
+	}, { "firstname": 1, "lastname": 1, "email": 1 }).limit(50).exec(function (err, result) {
+		if (err) {
+			logger.error(err.stack);
+			return res.status(500).send({ success: false, msg: 'Internal Server Error' })
+		}
+		else {
+			return res.status(200).send({ success: true, msg: 'Search Users', data: result });
+		}
+	})
 });
 
 router.post('/updateProfile', validateUpdateUserData, function (req, res) {
@@ -77,8 +78,10 @@ router.post('/updateProfile', validateUpdateUserData, function (req, res) {
 		let lastname = req.body.lastname;
 		let profile_image = req.body.profile_image;
 
-		User.findByIdAndUpdate(userId, { $set: { 
-			'firstname': firstname, 'lastname': lastname, profile_image: profile_image } 
+		User.findByIdAndUpdate(userId, {
+			$set: {
+				'firstname': firstname, 'lastname': lastname, profile_image: profile_image
+			}
 		}, { new: true }, function (err, updated) {
 			if (err) {
 				logger.error(err.stack);
@@ -93,23 +96,23 @@ router.post('/updateProfile', validateUpdateUserData, function (req, res) {
 });
 
 router.get('/profile', function (req, res) {
-	
-		ensureAuth(req, res, function (payload) {
-	
-			let userId = payload.sub;
-	
-			User.findById(userId, function (err, foundUser) {
-				if (err) {
-					logger.error(err.stack);
-					return res.status(500).send({ success: false, msg: 'Internal Server Error' })
-				}
-				else {
-					return res.status(200).send({ success: true, msg: 'Found User', data: foundUser });
-				}
-			})
-		});
-	
+
+	ensureAuth(req, res, function (payload) {
+
+		let userId = payload.sub;
+
+		User.findById(userId, function (err, foundUser) {
+			if (err) {
+				logger.error(err.stack);
+				return res.status(500).send({ success: false, msg: 'Internal Server Error' })
+			}
+			else {
+				return res.status(200).send({ success: true, msg: 'Found User', data: foundUser });
+			}
+		})
 	});
+
+});
 
 module.exports = router;
 

@@ -11,5 +11,9 @@ module.exports = {
 	MAIL: {
 		EMAIL_ID: process.env.EMAIL_ID,
 		EMAIL_PWD: process.env.EMAIL_PWD
-	}
+	},
+	rateLimits: {
+        ttl: 10 * 60 * 1000, // 10 mins
+        maxHits: 6 // Max Hits
+    }
 }
