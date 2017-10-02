@@ -13,7 +13,7 @@ module.exports = {
 		EMAIL_PWD: process.env.EMAIL_PWD
 	},
 	rateLimits: {
-        ttl: 10 * 60 * 1000, // 10 mins
-        maxHits: 6 // Max Hits
+        ttl: 60, // 1 mins
+        maxHits: 5 // Max Hits
     }
 }
