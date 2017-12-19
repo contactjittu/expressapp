@@ -9,7 +9,8 @@ module.exports.cache = function (duration) {
     if (cachedBody) {
       res.send(JSON.parse(cachedBody))
       return
-    } else {
+    }
+    else {
       res.sendResponse = res.send
       res.send = function (body) {
         mcache.put(key, body, duration * 1000);

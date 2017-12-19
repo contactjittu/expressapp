@@ -1,0 +1,129 @@
+swagger: "2.0"
+info:
+  description: "Expressapp api documentation"
+  version: "1.0.0"
+  title: "Expressapp"
+  # termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "contactjittu@gmail.com"
+  # license:
+  #   name: "Apache 2.0"
+  #   url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:3003"
+basePath: "/api"
+schemes:
+- "http"
+securityDefinitions:
+  Bearer:
+    description: For accessing the API a valid token must be passed in all the queries
+    type: apiKey
+    name: Authorization
+    in: header
+paths:
+  /signup:
+    post:
+      tags:
+      - "User"
+      summary: "Signup"
+      description: "Create account"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "username, roleName, and password in body"
+        required: true
+        schema:
+          $ref: "#/definitions/signupSchema"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Internal Server Error"
+  /signin:
+    post:
+      tags:
+      - "User"
+      summary: "Signin using username and password"
+      description: "Signin"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Send username and password in body"
+        required: true
+        schema:
+          $ref: "#/definitions/signinSchema"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Internal Server Error"
+  /editUser:
+    put:
+      tags:
+      - "User"
+      summary: "Update user data"
+      description: "Update user data"
+      security:
+        - Bearer: [] 
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Send userId, username, roleName, isActive and password in body"
+        required: true
+        schema:
+          $ref: "#/definitions/editUserSchema"
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Unauthorized"
+        401:
+          description: "Bad Request"
+        500:
+          description: "Internal Server Error"
+definitions:
+  signupSchema:
+    type: "object"
+    required:
+    - "username"
+    - "roleName"
+    - "password"
+    properties:
+      username:
+        type: "string"
+      roleName:
+        type: "string"
+      password:
+        type: "string"
+  signinSchema:
+    type: "object"
+    required:
+    - "username"
+    - "password"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+  editUserSchema:
+    type: "object"
+    required:
+    - "username"
+    - "roleName"
+    - "userId"
+    properties:
+      userId:
+        type: "string"
+      username:
+        type: "string"
+      roleName:
+        type: "string"
+      password:
+        type: "string"
+      isActive:
+        type: "boolean"                     

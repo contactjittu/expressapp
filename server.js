@@ -11,11 +11,21 @@ const fs = require('fs');
 const path = require('path');
 const morgan = require('morgan');
 const cors = require("cors");
+const swaggerTools = require('swagger-tools');
+const jsyaml = require('js-yaml');
 const mail = require('./utils/mail');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(config.MONGO_URI);
 
+let spec = fs.readFileSync(path.join(__dirname, 'apidocs/swagger.yaml'), 'utf8');
+let swaggerDoc = jsyaml.safeLoad(spec);
+
+swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
+    app.use(middleware.swaggerUi());
+})
+
+app.set('case sensitive routing', true);
 app.set('env', config.NODE_ENV);
 app.set('port', config.PORT);
 
@@ -26,21 +36,14 @@ app.use(compression());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 app.use(bodyParser.json({limit: '50mb'}));
 
-if (app.get('env') === 'production') {
-  app.use(function (req, res, next) {
-    var protocol = req.get('x-forwarded-proto');
-    protocol == 'https' ? next() : res.redirect('https://' + req.hostname + req.url);
-  });
-}
-
 // importing all modules
-app.use(require('./modules/auth/authcontroller'));
-app.use(require('./modules/user/usercontroller'));
-app.use(require('./modules/fileupload/fileuploadcontroller'));
+app.use('/api',
+  require('./modules/user/router')
+);
 
-app.use(function(req, res) {
-  return res.status(404).send({ success: false, msg: 'API not found' })
-});
+// app.use(function(req, res) {
+//   return res.status(404).send({ success: false, msg: 'API not found' })
+// });
 
 // this route is only for upload file testing using html code use uploadImage api to upload file
 app.get('/upload', function (req, res) {
