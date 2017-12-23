@@ -2,6 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const config = require('../../config/config');
 const ensureAuth = require('../middleware/authmiddleware').ensureAuth;
 const logger = require('../../utils/logger');
@@ -11,7 +12,7 @@ const secret = config.SECRET;
 
 let createToken = (user) => {
 	let payload = {
-		sub: user._id,
+		sub: user.userId,
 		iat: Math.floor(Date.now() / 1000) - 30,
 		exp: Math.floor(Date.now() / 1000) + 86400000
 	};
@@ -24,12 +25,15 @@ module.exports.signup = (req, res) => {
 			logger.error(err.stack);
 			if (err.code === 11000) {
         		let field = err.message.match(/dup key: { : "(.+)" }/)[1];
-				return res.status(500).send({ success: false, msg: `An account with email '${field}' already exists.`, data: err });
+				return res.status(200).send({ success: false, msg: `An account with an email '${field}' already exists.`, data: {} });
+			}
+			if(err.name === 'ValidationError'){
+				return res.status(200).send({ success: false, msg: `Validation Failed`, data: err });
 			}
 			return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err })
 		}
 		return res.status(200).send({ success: true, msg: 'Signup successfully', data: {} })
-	})	
+	});
 }
 
 module.exports.signin = (req, res) => {
@@ -45,19 +49,14 @@ module.exports.signin = (req, res) => {
 						return res.status(200).send({ success: false, msg: 'Wrong email and password', data: {} })
 					}
 					else {
-						let sendData = {};
-						sendData.token = createToken(foundUser);
-						sendData.userId = foundUser._id;
-						sendData.fistname = foundUser.fistname;
-						sendData.lastname = foundUser.lastname;
-						sendData.email = foundUser.email;
-						sendData.profile_image = foundUser.profile_image;
-						return res.status(200).send({ success: true, msg: 'Login successfull', data: sendData });
+						foundUser = JSON.parse(JSON.stringify(foundUser));
+						foundUser.token = createToken(foundUser);
+						return res.status(200).send({ success: true, msg: 'Login successfull', data: foundUser });
 					}
 				})
 			}
 			else {
-				return res.status(200).send({ success: false, msg: 'Wrong email and password' })
+				return res.status(200).send({ success: false, msg: 'Wrong email and password', data: {} })
 			}
 		}
 	});
@@ -78,8 +77,8 @@ module.exports.editProfile = (req, res) => {
 	});
 }
 
-module.exports.users = (req, res) => {
-	let username = req.query.matchelement;
+module.exports.searchUsers = (req, res) => {
+	let username = req.query.text;
 	if (!username) {
 		return res.status(400).send({ success: false, msg: 'Bad Request', data: {} });
 	}
@@ -91,13 +90,14 @@ module.exports.users = (req, res) => {
 			return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err })
 		}
 		else {
-			return res.status(200).send({ success: true, msg: 'Search Users', data: result });
+			return res.status(200).send({ success: true, msg: 'Found Users', data: data });
 		}
 	});
 }
 
-module.exports.user = (req, res) => {
-	userdb.userById(req.query, (err, data) => {
+module.exports.getUserById = (req, res) => {
+	let userId = req.query.userId || req.params.userId;
+	userdb.getUserById(userId, (err, data) => {
 		if (err) {
 			logger.error(err.stack);
 			return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err })
@@ -116,6 +116,19 @@ module.exports.allUser = (req, res) => {
 		}
 		else {
 			return res.status(200).send({ success: true, msg: 'Found User', data: data });
+		}
+	});
+}
+
+module.exports.deleteUserById = (req, res) => {
+	let userId = req.query.userId || req.params.userId;
+	userdb.deleteUserById(userId, (err, data) => {
+		if (err) {
+			logger.error(err.stack);
+			return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err })
+		}
+		else {
+			return res.status(200).send({ success: true, msg: 'User deleted', data: {} });
 		}
 	});
 }

@@ -3,38 +3,32 @@
 const User = require('./usermodel').User;
 
 module.exports.signup = (input, callback) => {
-	let newuser = new User(req.body);
+	let newuser = new User(input);
 	newuser.save((err, data) => {
 		return callback(err, data);
 	});
 }
 
 module.exports.signin = (input, callback) => {
-	User.findOne({ email: req.body.email.toLowerCase() }, (err, foundUser) => {
+	User.findOne({ email: input.email.toLowerCase() }, '+password', (err, foundUser) => {
 		return callback(err, foundUser);
 	});
 }
 
 module.exports.editProfile = (input, callback) => {
-	User.findByIdAndUpdate(input.userId, { $set: { 'firstname': input.firstname, 'lastname': input.lastname, 'profile_image': input.profile_image }}, { new: true }, (err, updated) => {
+	User.findByIdAndUpdate(input.userId, { $set: { 'firstName': input.firstName, 'lastName': input.lastName, 'profileImage': input.profileImage }}, { new: true }, (err, updated) => {
 		return callback(err, updated);
 	});
 }
 
 module.exports.searchUsers = (input, callback) => {
-	let username = req.query.matchelement;
-	if (!username) {
-		return res.status(400).send({ success: false, msg: 'Bad Request' })
-	}
-	let regexStr = username.split(/ /).join("|");
-
-	User.find({ "$or": [{ "firstname": { "$regex": regexStr, "$options": 'i' }},{ "lastname": { "$regex": regexStr, "$options": 'i' }}]}, { "firstname": 1, "lastname": 1, "email": 1 }).limit(50).exec((err, data) => {
+	User.find({ "$or": [{ "firstName": { "$regex": input, "$options": 'i' }},{ "lastName": { "$regex": input, "$options": 'i' }}]}).limit(50).exec((err, data) => {
 		return callback(err, data)
 	})
 }
 
-module.exports.userById = (input, callback) => {
-	User.findById(input.userId, (err, data) => {
+module.exports.getUserById = (input, callback) => {
+	User.findById(input, (err, data) => {
 		return callback(err, data);
 	});
 }
@@ -71,4 +65,10 @@ module.exports.allUser = (input, callback) => {
 			});
 		}
 	})
+}
+
+module.exports.deleteUserById = (input, callback) => {
+	User.findById(input, (err, data) => {
+		return callback(err, data);
+	});
 }
