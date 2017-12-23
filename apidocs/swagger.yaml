@@ -20,18 +20,20 @@ securityDefinitions:
     name: Authorization
     in: header
 paths:
-  /signup:
+  /user/signup:
     post:
       tags:
       - "User"
       summary: "Signup"
       description: "Create account"
+      consumes:
+      - "application/json"
       produces:
       - "application/json"
       parameters:
       - in: "body"
         name: "body"
-        description: "username, roleName, and password in body"
+        description: "firstName, lastName, email, profileImage, and password in body"
         required: true
         schema:
           $ref: "#/definitions/signupSchema"
@@ -40,18 +42,20 @@ paths:
           description: "successful operation"
         500:
           description: "Internal Server Error"
-  /signin:
+  /user/signin:
     post:
       tags:
       - "User"
-      summary: "Signin using username and password"
+      summary: "Signin using email and password"
       description: "Signin"
+      consumes:
+      - "application/json"
       produces:
       - "application/json"
       parameters:
       - in: "body"
         name: "body"
-        description: "Send username and password in body"
+        description: "Send email and password in body"
         required: true
         schema:
           $ref: "#/definitions/signinSchema"
@@ -60,20 +64,20 @@ paths:
           description: "successful operation"
         500:
           description: "Internal Server Error"
-  /editUser:
+  /user:
     put:
       tags:
       - "User"
       summary: "Update user data"
       description: "Update user data"
-      security:
-        - Bearer: [] 
+      consumes:
+      - "application/json"
       produces:
       - "application/json"
       parameters:
       - in: "body"
         name: "body"
-        description: "Send userId, username, roleName, isActive and password in body"
+        description: "firstName, lastName, email, profileImage in body"
         required: true
         schema:
           $ref: "#/definitions/editUserSchema"
@@ -81,49 +85,185 @@ paths:
         200:
           description: "successful operation"
         400:
-          description: "Unauthorized"
-        401:
           description: "Bad Request"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+      security:
+        - Bearer: []
+    get:
+      tags:
+      - "User"
+      summary: "Get user by userId"
+      description: "Get user by userId"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "query"
+        description: "userId in query"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Internal Server Error"
+    delete:
+      tags:
+      - "User"
+      summary: "Delete user by userId"
+      description: "Delete user by userId"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "query"
+        description: "userId in query"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Internal Server Error"
+  /user/{userId}:
+    get:
+      tags:
+      - "User"
+      summary: "Get user by userId"
+      description: "Get user by userId"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "userId in path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Internal Server Error"
+    delete:
+      tags:
+      - "User"
+      summary: "Delete user by userId"
+      description: "Delete user by userId"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "userId in path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Internal Server Error"
+  /users/search:
+    get:
+      tags:
+      - "User"
+      summary: "Search users"
+      description: "Search users by their firstName and lastName using text"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "text"
+        in: "query"
+        description: "text in query"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Internal Server Error"
+  /users:
+    get:
+      tags:
+      - "User"
+      summary: "Get users"
+      description: "Get users with pagination"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "itemsperpage"
+        in: "query"
+        description: "itemsperpage in query"
+        required: true
+        type: "string"
+      - name: "page"
+        in: "query"
+        description: "page in query"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
         500:
           description: "Internal Server Error"
 definitions:
   signupSchema:
     type: "object"
     required:
-    - "username"
-    - "roleName"
+    - "firstName"
+    - "lastName"
+    - "email"
     - "password"
+    - "profileImage"
     properties:
-      username:
+      firstName:
         type: "string"
-      roleName:
+      lastName:
+        type: "string"
+      email:
         type: "string"
       password:
         type: "string"
+      profileImage:
+        type: "string"
+        format: "byte"
   signinSchema:
     type: "object"
     required:
-    - "username"
+    - "email"
     - "password"
     properties:
-      username:
+      email:
         type: "string"
       password:
         type: "string"
   editUserSchema:
     type: "object"
     required:
-    - "username"
-    - "roleName"
-    - "userId"
+    - "firstName"
+    - "lastName"
+    - "email"
+    - "profileImage"
     properties:
-      userId:
+      firstName:
         type: "string"
-      username:
+      lastName:
         type: "string"
-      roleName:
+      email:
         type: "string"
-      password:
-        type: "string"
-      isActive:
-        type: "boolean"                     
+      profileImage:
+        type: "string"                    

@@ -45,7 +45,7 @@ module.exports.allUser = (input, callback) => {
 			return callback(err);
 		}
 		else {
-			User.find({}, { "firstname": 1, "lastname": 1, "email": 1 }).skip(skip).limit(limit).exec((err, data) => {
+			User.find({}, { "firstName": 1, "lastName": 1, "email": 1 }).skip(skip).limit(limit).exec((err, data) => {
 				if(err){
 					return callback(err);
 				}
@@ -68,7 +68,7 @@ module.exports.allUser = (input, callback) => {
 }
 
 module.exports.deleteUserById = (input, callback) => {
-	User.findById(input, (err, data) => {
+	User.remove({ '_id': input }, (err, data) => {
 		return callback(err, data);
 	});
 }

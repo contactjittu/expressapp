@@ -33,4 +33,8 @@ describe('/Users API', function() {
       done();
     });
   });
+  after(function() {
+    app.close();
+    console.log("Our applicationa tests done!");
+  });
 });

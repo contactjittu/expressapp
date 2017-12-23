@@ -7,10 +7,10 @@ const userbl = require('./userbl');
 const cache = require('../../utils/cache');
 const rateLimit = require('../throttle/throttleservice');
 
-router.post('/signup', userbl.signup);
-router.post('/signin', userbl.signin);
+router.post('/user/signup', userbl.signup);
+router.post('/user/signin', userbl.signin);
 router.put('/user', userbl.editProfile);
-router.get('/searchUsers', userbl.searchUsers);
+router.get('/users/search', userbl.searchUsers);
 router.get('/user', rateLimit.limit, userbl.getUserById);
 router.get('/user/:userId', rateLimit.limit, userbl.getUserById);
 router.get('/users', cache.cache(20), userbl.allUser);
