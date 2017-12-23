@@ -28,18 +28,19 @@ npm start
 
 ###### *Signup User*
 
-	POST: http://localhost:3003/auth/signup
+	POST: http://localhost:3003/api/user/signup
 
 	{
-		"firstname": "Jitendra",
-		"lastname": "Kumar",
+		"firstName": "Jitendra",
+		"lastName": "Kumar",
 		"email": "contactjittu@gmail.com",
+		"profileImage":"base64"
 		"password":"123"
 	}
   
 ###### *Login User*
 
-	POST: http://localhost:3003/auth/login
+	POST: http://localhost:3003/api/user/signin
 
 	{
 		"email": "contactjittu@gmail.com",
@@ -48,7 +49,7 @@ npm start
 
 ###### *Update User info*
 
-	POST: http://localhost:3003/updateProfile
+	PUT: http://localhost:3003/user
 
 	{
 		"firstname": "Jitendra",
@@ -58,12 +59,12 @@ npm start
 
 ###### *Get User profile*
 
-	GET: http://localhost:3003/profile
+	GET: http://localhost:3003/api/user/:userId
 
 ###### *Search Users*
 
-	GET: http://localhost:3003/searchuser?matchelement=jitendra
+	GET: http://localhost:3003/api/users/search?text=jitendra
   
 ###### *Get all Users*
 
-	GET: http://localhost:3003/allusers?itemsperpage=10&page=1
+	GET: http://localhost:3003/api/users?itemsperpage=10&page=1
