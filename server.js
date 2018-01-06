@@ -101,7 +101,7 @@ if (config.CLUSTERING) {
 function startServer() {
   app.listen(app.get('port'), function () {
     console.log(`Server is listening on http://${os.hostname()}:${app.get('port')}`);
-    console.log(process.env.URL.split("."))
+    console.log(process.env.URL)
   });
 }
 
