@@ -21,6 +21,7 @@ mongoose.connect(config.MONGO_URI);
 
 let spec = fs.readFileSync(path.join(__dirname, 'apidocs/swagger.yaml'), 'utf8');
 let swaggerDoc = jsyaml.safeLoad(spec);
+
 swaggerDoc.host = `${os.hostname()}:${config.PORT}`;
 
 swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
@@ -100,6 +101,7 @@ if (config.CLUSTERING) {
 function startServer() {
   app.listen(app.get('port'), function () {
     console.log(`Server is listening on http://${os.hostname()}:${app.get('port')}`);
+    console.log(ENV['URL'].split("."))
   });
 }
 
