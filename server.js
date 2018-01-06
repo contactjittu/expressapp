@@ -24,6 +24,11 @@ let swaggerDoc = jsyaml.safeLoad(spec);
 
 swaggerDoc.host = `${os.hostname()}:${config.PORT}`;
 
+// For Heroku
+if (app.get('env') === 'production') {
+  swaggerDoc.host = 'https://expressapp-api.herokuapp.com/api';  
+}
+
 swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
   app.use(middleware.swaggerUi());
 })
