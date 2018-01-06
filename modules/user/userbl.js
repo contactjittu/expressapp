@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const config = require('../../config/config');
-const ensureAuth = require('../middleware/authmiddleware').ensureAuth;
+const middleware = require('../middleware/authmiddleware');
 const logger = require('../../utils/logger');
 const userdb = require('./userdb');
 
@@ -24,10 +24,10 @@ module.exports.signup = (req, res) => {
 		if (err) {
 			logger.error(err.stack);
 			if (err.code === 11000) {
-        		let field = err.message.match(/dup key: { : "(.+)" }/)[1];
+				let field = err.message.match(/dup key: { : "(.+)" }/)[1];
 				return res.status(200).send({ success: false, msg: `An account with an email '${field}' already exists.`, data: {} });
 			}
-			if(err.name === 'ValidationError'){
+			if (err.name === 'ValidationError') {
 				return res.status(200).send({ success: false, msg: `Validation Failed`, data: err });
 			}
 			return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err })
@@ -49,7 +49,7 @@ module.exports.signin = (req, res) => {
 						return res.status(200).send({ success: false, msg: 'Wrong email and password', data: {} })
 					}
 					else {
-						foundUser = JSON.parse(JSON.stringify(foundUser));
+						foundUser = foundUser.toObject();
 						foundUser.token = createToken(foundUser);
 						return res.status(200).send({ success: true, msg: 'Login successfull', data: foundUser });
 					}
@@ -63,7 +63,7 @@ module.exports.signin = (req, res) => {
 }
 
 module.exports.editProfile = (req, res) => {
-	ensureAuth(req, res, function (payload) {
+	middleware.ensureAuth(req, res, function (payload) {
 		req.body.userId = payload.sub;
 		userdb.editProfile(req.body, (err, data) => {
 			if (err) {
@@ -122,13 +122,15 @@ module.exports.allUser = (req, res) => {
 
 module.exports.deleteUserById = (req, res) => {
 	let userId = req.query.userId || req.params.userId;
-	userdb.deleteUserById(userId, (err, data) => {
-		if (err) {
-			logger.error(err.stack);
-			return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err })
-		}
-		else {
-			return res.status(200).send({ success: true, msg: 'User deleted', data: {} });
-		}
+	middleware.checkAdminAuth(req, res, function (payload) {
+		userdb.deleteUserById(userId, (err, data) => {
+			if (err) {
+				logger.error(err.stack);
+				return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err })
+			}
+			else {
+				return res.status(200).send({ success: true, msg: 'User deleted', data: {} });
+			}
+		});
 	});
 }

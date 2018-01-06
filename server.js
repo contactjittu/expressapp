@@ -3,6 +3,7 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const os = require('os');
 const config = require('./config/config');
 const bodyParser = require('body-parser');
 const compression = require('compression');
@@ -20,9 +21,10 @@ mongoose.connect(config.MONGO_URI);
 
 let spec = fs.readFileSync(path.join(__dirname, 'apidocs/swagger.yaml'), 'utf8');
 let swaggerDoc = jsyaml.safeLoad(spec);
+swaggerDoc.host = `${os.hostname()}:${config.PORT}`;
 
 swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
-    app.use(middleware.swaggerUi());
+  app.use(middleware.swaggerUi());
 })
 
 app.set('case sensitive routing', true);
@@ -34,7 +36,7 @@ app.use(morgan('dev'));
 app.use(helmet());
 app.use(compression());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.json({ limit: '50mb' }));
 
 // importing all modules
 app.use('/api',
@@ -65,7 +67,6 @@ var sendEmail = function (counter) {
 if (config.CLUSTERING) {
 
   const cluster = require('cluster');
-  const os = require('os');
 
   if (cluster.isMaster) {
     let crashCount = 0;
@@ -98,8 +99,12 @@ if (config.CLUSTERING) {
 
 function startServer() {
   app.listen(app.get('port'), function () {
-    console.log(`Server is listening on http://localhost:${app.get('port')}`);
+    console.log(`Server is listening on http://${os.hostname()}:${app.get('port')}`);
   });
 }
+
+app.use(function (err, req, res, next) {
+  return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err });
+});
 
 module.exports = app;
