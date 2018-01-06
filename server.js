@@ -19,23 +19,24 @@ const mail = require('./utils/mail');
 mongoose.Promise = global.Promise;
 mongoose.connect(config.MONGO_URI);
 
+app.set('case sensitive routing', true);
+app.set('env', config.NODE_ENV);
+app.set('port', config.PORT);
+
 let spec = fs.readFileSync(path.join(__dirname, 'apidocs/swagger.yaml'), 'utf8');
 let swaggerDoc = jsyaml.safeLoad(spec);
 
-swaggerDoc.host = `${os.hostname()}:${config.PORT}`;
-
-// For Heroku
+// For Swagger on Heroku
 if (app.get('env') === 'production') {
-  swaggerDoc.host = 'https://expressapp-api.herokuapp.com/api';  
+  swaggerDoc.host = 'expressapp-api.herokuapp.com';  
+}
+else{
+  swaggerDoc.host = `${os.hostname()}:${config.PORT}`;
 }
 
 swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
   app.use(middleware.swaggerUi());
-})
-
-app.set('case sensitive routing', true);
-app.set('env', config.NODE_ENV);
-app.set('port', config.PORT);
+});
 
 app.use(cors());
 app.use(morgan('dev'));

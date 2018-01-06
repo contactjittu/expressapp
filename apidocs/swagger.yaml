@@ -13,6 +13,7 @@ host: ""
 basePath: "/api"
 schemes:
 - "http"
+- "https"
 securityDefinitions:
   Bearer:
     description: For accessing the API a valid token must be passed in all the queries
