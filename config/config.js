@@ -16,7 +16,8 @@ module.exports = {
         ttl: 60, // 1 mins
         maxHits: 5 // Max Hits
 	},
-	REDIS_URL: process.env.REDIS_URL,
+	REDIS_HOST: process.env.REDIS_HOST,
+	REDIS_PASSWD: process.env.REDIS_PASSWD,
 	REDIS_PORT: process.env.REDIS_PORT,
 	CACHE_DURATION: process.env.CACHE_DURATION, // in seconds
 	SWAGGER_URL: 'expressapp-api.herokuapp.com'
