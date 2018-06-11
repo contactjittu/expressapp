@@ -4,7 +4,6 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const config = require('../../config/config');
-const middleware = require('../middleware/authmiddleware');
 const logger = require('../../utils/logger');
 const userdb = require('./userdb');
 
@@ -12,7 +11,7 @@ const secret = config.SECRET;
 
 let createToken = (user) => {
 	let payload = {
-		sub: user.userId,
+		userId: user.userId,
 		iat: Math.floor(Date.now() / 1000) - 30,
 		exp: Math.floor(Date.now() / 1000) + 86400000
 	};
@@ -63,17 +62,15 @@ module.exports.signin = (req, res) => {
 }
 
 module.exports.editProfile = (req, res) => {
-	middleware.ensureAuth(req, res, function (payload) {
-		req.body.userId = payload.sub;
-		userdb.editProfile(req.body, (err, data) => {
-			if (err) {
-				logger.error(err.stack);
-				return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err });
-			}
-			else {
-				return res.status(200).send({ success: true, msg: 'User data updated', data: data });
-			}
-		});
+	req.body.userId = req.user.userId;
+	userdb.editProfile(req.body, (err, data) => {
+		if (err) {
+			logger.error(err.stack);
+			return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err });
+		}
+		else {
+			return res.status(200).send({ success: true, msg: 'User data updated', data: data });
+		}
 	});
 }
 
@@ -122,15 +119,13 @@ module.exports.allUser = (req, res) => {
 
 module.exports.deleteUserById = (req, res) => {
 	let userId = req.query.userId || req.params.userId;
-	middleware.checkAdminAuth(req, res, function (payload) {
-		userdb.deleteUserById(userId, (err, data) => {
-			if (err) {
-				logger.error(err.stack);
-				return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err })
-			}
-			else {
-				return res.status(200).send({ success: true, msg: 'User deleted', data: {} });
-			}
-		});
+	userdb.deleteUserById(userId, (err, data) => {
+		if (err) {
+			logger.error(err.stack);
+			return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err })
+		}
+		else {
+			return res.status(200).send({ success: true, msg: 'User deleted', data: {} });
+		}
 	});
 }

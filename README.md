@@ -1,5 +1,5 @@
 # expressapp
-> User Authentication using JWT JSON WebToken in Node.js using Express, Used Joi for user input validation, mongoose for ORM, Winston for error logging, Nodemailer for send email after crashing the Server, memory-cache for caching the data on RAM
+> User Authentication using JWT JSON WebToken in Node.js using Express, Used Joi for user input validation, mongoose for ORM, Winston for error logging, Nodemailer for send email after crashing the Server, memory-cache for caching the data on RAM, also used redis for caching(updated)
 
 ## Installation
 
@@ -16,6 +16,9 @@ MONGO_URI = mongodb://localhost:27017/expressapp
 NODE_ENV = development
 EMAIL_ID = example@example.com
 EMAIL_PWD = example
+REDIS_URL = localhost
+REDIS_PORT = 6379
+CACHE_DURATION = 30
 ```
 
 ## Start an app

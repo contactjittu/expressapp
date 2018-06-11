@@ -41,7 +41,7 @@ module.exports.allUser = (input, callback) => {
 	let skip = itemsperpage * (page - 1);
 	let limit = parseInt(itemsperpage);
 
-	User.find().count(function (err, totalCount) {
+	User.find().count((err, totalCount) => {
 		if (err) {
 			return callback(err);
 		}

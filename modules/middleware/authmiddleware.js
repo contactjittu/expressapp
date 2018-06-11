@@ -10,7 +10,7 @@ module.exports.ensureAuth = function (req, res, next) {
 		return res.status(401).send({ success: false, msg: 'Auth headers required', data: {} });
 	}
 	let token = req.headers.authorization.split(' ')[1];
-	jwt.verify(token, config.SECRET, function (err, decoded) {
+	jwt.verify(token, config.SECRET, function (err, user) {
 		if (err) {
 			logger.error(err.stack);
 			if (err.name === 'TokenExpiredError') {
@@ -21,7 +21,8 @@ module.exports.ensureAuth = function (req, res, next) {
 			}
 			return res.status(401).send({ success: false, msg: err.message, data: err });
 		}
-		next(decoded);
+		req.user = user;
+		next();
 	});
 }
 
@@ -30,7 +31,7 @@ module.exports.checkAdminAuth = function (req, res, next) {
 		return res.status(401).send({ success: false, msg: 'Auth headers required', data: {} });
 	}
 	let token = req.headers.authorization.split(' ')[1];
-	jwt.verify(token, config.SECRET, function (err, decoded) {
+	jwt.verify(token, config.SECRET, function (err, user) {
 		if (err) {
 			logger.error(err.stack);
 			if (err.name === 'TokenExpiredError') {
@@ -41,7 +42,7 @@ module.exports.checkAdminAuth = function (req, res, next) {
 			}
 			return res.status(401).send({ success: false, msg: err.message, data: err });
 		}
-		userdb.getUserById(decoded.sub, (err, data) => {
+		userdb.getUserById(user.userId, (err, data) => {
 			if (err) {
 				return res.status(401).send({ success: false, msg: 'Admin login required', data: {} });
 			}
@@ -52,7 +53,8 @@ module.exports.checkAdminAuth = function (req, res, next) {
 				if (data.role !== 'admin') {
 					return res.status(401).send({ success: false, msg: 'Admin login required', data: {} });
 				}
-				next(decoded);
+				req.user = user;
+				next();
 			}
 		});
 	});

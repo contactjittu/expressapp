@@ -10,10 +10,9 @@ const compression = require('compression');
 const helmet = require('helmet');
 const fs = require('fs');
 const path = require('path');
-const morgan = require('morgan');
 const cors = require("cors");
-const swaggerTools = require('swagger-tools');
-const jsyaml = require('js-yaml');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
 const mail = require('./utils/mail');
 
 mongoose.Promise = global.Promise;
@@ -23,23 +22,21 @@ app.set('case sensitive routing', true);
 app.set('env', config.NODE_ENV);
 app.set('port', config.PORT);
 
-let spec = fs.readFileSync(path.join(__dirname, 'apidocs/swagger.yaml'), 'utf8');
-let swaggerDoc = jsyaml.safeLoad(spec);
-
-// For Swagger on Heroku
+const swaggerDocument = YAML.load('./apidocs/swagger.yaml');
 if (app.get('env') === 'production') {
-  swaggerDoc.host = 'expressapp-api.herokuapp.com';  
+	swaggerDocument.host = config.SWAGGER_URL;
 }
-else{
-  swaggerDoc.host = `${os.hostname()}:${config.PORT}`;
+else {
+	swaggerDocument.host = `${os.hostname()}:${config.PORT}`;
 }
 
-swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
-  app.use(middleware.swaggerUi());
-});
+let swagOptions = {
+	explorer: false,
+	customCss: '.swagger-ui .topbar { display: none }'
+};
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swagOptions));
 
 app.use(cors());
-app.use(morgan('dev'));
 app.use(helmet());
 app.use(compression());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
@@ -50,9 +47,9 @@ app.use('/api',
   require('./modules/user/router')
 );
 
-// app.use(function(req, res) {
-//   return res.status(404).send({ success: false, msg: 'API not found' })
-// });
+app.use(function(req, res) {
+  return res.status(404).send({ success: false, msg: 'API not found', data: req.originalUrl + ' not found' })
+});
 
 // this route is only for upload file testing using html code use uploadImage api to upload file
 app.get('/upload', function (req, res) {
@@ -111,7 +108,7 @@ function startServer() {
 }
 
 app.use(function (err, req, res, next) {
-  return res.status(500).send({ success: false, msg: 'Internal Server Error', data: err });
+  return res.status(500).send({ success: false, msg: 'Internal Server Error', data: (app.get('env') === 'production') ? {} : err.stack });
 });
 
 module.exports = app;
