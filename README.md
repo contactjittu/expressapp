@@ -3,29 +3,44 @@
 
 ## Installation
 
-```sh
-npm install
-```
+	npm install
 
 ## Setup
 Create .env file on root directory and add the below code
-```sh
-SECRET = AIzaSyAQfxPJiounkhOjODEO5ZieffeBv6yft2Q
-PORT = 3003
-MONGO_URI = mongodb://localhost:27017/expressapp
-NODE_ENV = development
-EMAIL_ID = example@example.com
-EMAIL_PWD = example
-REDIS_URL = localhost
-REDIS_PORT = 6379
-CACHE_DURATION = 30
-```
+
+	SECRET = AIzaSyAQfxPJiounkhOjODEO5ZieffeBv6yft2Q
+	PORT = 3003
+	MONGO_URI = mongodb://localhost:27017/expressapp
+	NODE_ENV = development
+	EMAIL_ID = example@example.com
+	EMAIL_PWD = example
+	REDIS_HOST = localhost
+	REDIS_PASSWD = password
+	REDIS_PORT = 6379
+	CACHE_DURATION = 30
+
 
 ## Start an app
 
-```sh
-npm start
-```
+	npm start
+
+## Testing API routes, models
+
+Install mocha globally
+
+	npm install -g mocha
+	
+Then run test script
+
+	npm test
+
+### Swagger Documentation
+
+Link - http://localhost:3003/docs
+
+For editing the swagger documentation
+
+	npm run editdocs
 
 ### *API Available*
 

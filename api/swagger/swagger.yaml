@@ -9,7 +9,7 @@ info:
   # license:
   #   name: "Apache 2.0"
   #   url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: ""
+host: "localhost"
 basePath: "/api"
 schemes:
 - "http"
@@ -257,14 +257,11 @@ definitions:
     required:
     - "firstName"
     - "lastName"
-    - "email"
     - "profileImage"
     properties:
       firstName:
         type: "string"
       lastName:
-        type: "string"
-      email:
         type: "string"
       profileImage:
         type: "string"                    

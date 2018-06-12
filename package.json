@@ -10,7 +10,7 @@
     "test": "mocha --recursive --exit",
     "start": "node server.js",
     "addAdmin": "node default.js",
-    "editdocs": "swagger_swagger_fileName=apidocs/swagger.yaml swagger project edit",
+    "editdocs": "swagger project edit",
     "start:windows": "set NODE_ENV=production && node server.js",
     "start:linux": "export NODE_ENV=production && node server.js"
   },
