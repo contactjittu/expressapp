@@ -22,7 +22,7 @@ app.set('case sensitive routing', true);
 app.set('env', config.NODE_ENV);
 app.set('port', config.PORT);
 
-const swaggerDocument = YAML.load('./apidocs/swagger.yaml');
+const swaggerDocument = YAML.load('./api/swagger/swagger.yaml');
 if (app.get('env') === 'production') {
 	swaggerDocument.host = config.SWAGGER_URL;
 }
