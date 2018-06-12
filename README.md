@@ -38,8 +38,9 @@ Then run test script
 
 Link - http://localhost:3003/docs
 
-For editing the swagger documentation
+For editing the swagger documentation swagger project must installed globally
 
+	npm install -g swagger
 	npm run editdocs
 
 ### *API Available*
