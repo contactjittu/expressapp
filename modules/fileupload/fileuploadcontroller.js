@@ -20,29 +20,29 @@ var storage = multer.diskStorage({
     callback(null, 'file_' + Date.now() + '.' + fileExtension);
   }
 })
-var upload = multer({ storage: storage }).array('file',3);
 
-router.post('/uploadImage', function (req, res) {
-  upload(req, res, function (err) {
-    if (err) {
-      logger.error(err.stack);
-      return res.status(500).send({ success: false, msg: 'Internal Server Error' });
-    }
-    else {
-      let fileArray = [];
-      try {
-        let files = req.files;
-        files.forEach(function (file) {
-          fileArray.push({ 'fileId': file.filename })
-        });
-      }
-      catch (e) {
-        logger.error(e.stack);
-        return res.status(500).send({ success: false, msg: 'Internal Server Error' });
-      }
-      return res.status(200).send({ success: true, msg: 'File is uploaded', data: fileArray });
-    }
-  });
+const fileFilter = (req, file, callback) => {
+  if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return callback(new Error('Only image file are allowed!'), false);
+  }
+  callback(null, true);
+}
+
+var upload = multer({ storage: storage, fileFilter: fileFilter }).array('profilePic');
+
+router.post('/uploadImage', upload, function (req, res) {
+  var fileArray = [];
+  try {
+    var files = req.files;
+    files.forEach(function (file) {
+      fileArray.push({ 'fileId': file.filename })
+    });
+  }
+  catch (e) {
+    logger.error(e.stack);
+    return res.status(500).send({ success: false, msg: 'Internal Server Error' });
+  }
+  return res.status(200).send({ success: true, msg: 'File is uploaded', data: fileArray });
 });
 
 
