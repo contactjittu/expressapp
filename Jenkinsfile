@@ -19,9 +19,13 @@ pipeline {
      
     stage('Start') {
       steps {
-        sh 'pm2 stop server.js'
-        sh 'pm2 start server.js'
+        try {
+          sh 'pm2 stop server.js'
+          sh 'pm2 start server.js'
+        } catch (Exception e) {
+          sh 'pm2 start server.js'
+        }
       }
-    }      
+    }
   }
 }
