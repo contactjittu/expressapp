@@ -40,14 +40,15 @@ let checkSigninReq = (req, res, next) => {
 }
 
 const cache = require('../../utils/cache');
-const redisCache = require('../../utils/redisCache');
+// const redisCache = require('../../utils/redisCache');
 const rateLimit = require('../throttle/throttleservice');
 const authmiddleware = require('../middleware/authmiddleware');
 
 router.post('/user/signup', checkSignupReq, userbl.signup);
 router.post('/user/signin', checkSigninReq, userbl.signin);
 router.put('/user', authmiddleware.ensureAuth, userbl.editProfile);
-router.get('/users/search', redisCache.cachePromise, userbl.searchUsers);
+router.get('/users/search', userbl.searchUsers);
+// router.get('/users/search', redisCache.cachePromise, userbl.searchUsers);
 router.get('/user', rateLimit.limit, userbl.getUserById);
 router.get('/user/:userId', rateLimit.limit, userbl.getUserById);
 
@@ -58,7 +59,8 @@ router.get('/user/:userId', rateLimit.limit, userbl.getUserById);
 // router.get('/users', redisCache.cache, userbl.allUser);
 
 /* use redis as a middleware with promise */
-router.get('/users', redisCache.cachePromise, userbl.allUser);
+// router.get('/users', redisCache.cachePromise, userbl.allUser);
+router.get('/users', userbl.allUser);
 
 /* without cache middleware */
 // router.get('/users', userbl.allUser);

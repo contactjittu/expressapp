@@ -16,7 +16,36 @@ const YAML = require('yamljs');
 const mail = require('./utils/mail');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(config.MONGO_URI);
+// set the global useNewUrlParser option to turn on useNewUrlParser for every connection by default.
+mongoose.set('useNewUrlParser', true);
+// indexes for Mongoose schemas
+mongoose.set('useCreateIndex', true);
+// mongoose debug mode, by default false
+mongoose.set('debug', true);
+// connecting to db
+mongoose.connect(config.MONGO_URI, { useNewUrlParser: true });
+// handle connected event
+mongoose.connection.on('connected', () => {
+    console.info('Mongoose connected to : '+ config.MONGO_URI);
+});
+// handle error event
+mongoose.connection.on('error', (err) => {
+  console.error(err);
+  process.exit(0);
+});
+
+// handle disconnected event
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose disconnected.');
+});
+
+// handle application termination event
+process.on('SIGINT', () => {
+  mongoose.connection.close(() => {
+      console.info('MongoDB disconnected through application termination.');
+      process.exit(0);
+  });
+});
 
 app.set('case sensitive routing', true);
 app.set('env', config.NODE_ENV);

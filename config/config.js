@@ -3,9 +3,9 @@
 require('dotenv').config();
 
 module.exports = {
-	SECRET : process.env.SECRET,
-	PORT : process.env.PORT,
-	MONGO_URI: process.env.MONGO_URI,
+	SECRET : process.env.SECRET || 'sdhfkjw439879oijnmds9q3k%#&@',
+	PORT : process.env.PORT || 3005,
+	MONGO_URI: process.env.MONGO_URI || 'mongodb://localhost:27017/expressapp',
 	NODE_ENV: process.env.NODE_ENV || 'production',
 	CLUSTERING: false,
 	MAIL: {
