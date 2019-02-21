@@ -1,13 +1,27 @@
 pipeline {
   agent any
  
-  tools {nodejs "node"}
+  tools {nodejs "NodeJSv10.15.1"}
  
   stages {
-    stage('Example') {
+        
+    stage('Cloning Repo') {
       steps {
-        sh 'npm config ls'
+        git 'https://github.com/contactjittu/expressapp.git'
       }
     }
+        
+    stage('Install dependencies') {
+      steps {
+        sh 'npm install'
+      }
+    }
+     
+    stage('Start') {
+      steps {
+        sh 'pm2 stop server.js'
+        sh 'pm2 start server.js'
+      }
+    }      
   }
 }
