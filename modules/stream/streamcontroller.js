@@ -7,18 +7,19 @@ const fs = require('fs');
 
 router.get('/streamVideo', function (req, res) {
 
-  var file = path.resolve(__dirname, '../../video/movie.mp4');
-  var stat = fs.statSync(file);
-  var total = stat.size;
+  const file = path.resolve(__dirname, '../../video/movie.mp4');
+  const stat = fs.statSync(file);
+  const total = stat.size;
+  let stream;
   if (req.headers['range']) {
-    var range = req.headers.range;
-    var parts = range.replace(/bytes=/, "").split("-");
-    var partialstart = parts[0];
-    var partialend = parts[1];
+    const range = req.headers.range;
+    const parts = range.replace(/bytes=/, "").split("-");
+    const partialstart = parts[0];
+    const partialend = parts[1];
 
-    var start = parseInt(partialstart, 10);
-    var end = partialend ? parseInt(partialend, 10) : total - 1;
-    var chunksize = (end - start) + 1;
+    const start = parseInt(partialstart, 10);
+    const end = partialend ? parseInt(partialend, 10) : total - 1;
+    const chunksize = (end - start) + 1;
     console.log('RANGE: ' + start + ' - ' + end + ' = ' + chunksize);
 
     res.writeHead(206, {
@@ -28,7 +29,7 @@ router.get('/streamVideo', function (req, res) {
       'Content-Type': 'video/mp4'
     });
 
-    var stream = fs.createReadStream(file, { start: start, end: end })
+    stream = fs.createReadStream(file, { start: start, end: end })
       .on("open", function() {
         stream.pipe(res);
       })
@@ -44,7 +45,7 @@ router.get('/streamVideo', function (req, res) {
       'Content-Type': 'video/mp4'
     });
 
-    var stream = fs.createReadStream(file, { start: start, end: end })
+    stream = fs.createReadStream(file, { start: start, end: end })
       .on("open", function() {
         stream.pipe(res);
       })

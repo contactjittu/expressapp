@@ -14,14 +14,14 @@ winston.transports.DailyRotateFile = require('winston-daily-rotate-file');
 
 var logger = new (winston.Logger)({
   transports: [
-        new (winston.transports.DailyRotateFile)({
-            datePattern: 'yyyy-MM-dd.',
-            prepend: true,
-            level: config.ENV === 'development' ? 'debug' : 'info',
-            filename: dir + '/app.log', json: true
-        })
-    ],
-    exitOnError: false
+    new (winston.transports.DailyRotateFile)({
+      datePattern: 'yyyy-MM-dd.',
+      prepend: true,
+      level: config.ENV === 'development' ? 'debug' : 'info',
+      filename: dir + '/app.log', json: true
+    })
+  ],
+  exitOnError: false
 });
 
 module.exports = logger;

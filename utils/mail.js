@@ -4,7 +4,7 @@ const config = require('../config/config');
 
 module.exports.sendEmail = function (mailOptions) {
 
-  let transporter = nodemailer.createTransport({
+  const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: config.MAIL.EMAIL_ID,
@@ -18,5 +18,4 @@ module.exports.sendEmail = function (mailOptions) {
     }
     console.log('Message %s sent: %s', info.messageId, info.response);
   });
-  
 }

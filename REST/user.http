@@ -1,0 +1,47 @@
+# Environment Variables
+@hostname = localhost
+@port = 3005
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+
+# @name signup
+POST http://{{host}}/api/user/signup
+Content-type: {{contentType}}
+
+{
+  "firstName": "Jitendra",
+  "lastName": "Kumar",
+  "email": "contactjittu@gmail.com",
+  "password": "123",
+  "role": "admin"
+}
+
+
+# @name signin
+###
+POST http://{{host}}/api/user/signin
+Content-Type: {{contentType}}
+
+{
+  "email": "contactjittu@gmail.com",
+  "password": "123"
+}
+
+###
+@authToken = {{signin.response.body.$}}
+
+
+# @name updateUser
+###
+PUT http://{{host}}/api/user
+Authorization: {{authToken}}
+Content-type: {{contentType}}
+
+{
+  "firstName": "Jitendra",
+  "lastName": "Kumar"
+}
+
+# Get All users API
+###
+GET http://{{host}}/api/users

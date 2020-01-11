@@ -11,12 +11,12 @@ if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir);
 }
 
-var storage = multer.diskStorage({
+const storage = multer.diskStorage({
   destination: function (req, file, callback) {
     callback(null, dir);
   },
   filename: function (req, file, callback) {
-    var fileExtension = file.originalname.split('.').pop();
+    const fileExtension = file.originalname.split('.').pop();
     callback(null, 'file_' + Date.now() + '.' + fileExtension);
   }
 })
@@ -28,10 +28,10 @@ const fileFilter = (req, file, callback) => {
   callback(null, true);
 }
 
-var upload = multer({ storage: storage, fileFilter: fileFilter }).array('profilePic');
+const upload = multer({ storage: storage, fileFilter: fileFilter }).array('profilePic');
 
 router.post('/uploadImage', upload, function (req, res) {
-  var fileArray = [];
+  const fileArray = [];
   try {
     var files = req.files;
     files.forEach(function (file) {
@@ -48,7 +48,7 @@ router.post('/uploadImage', upload, function (req, res) {
 
 router.get('/getImage/:fileId', function (req, res) {
 
-  var file = req.params.fileId;
+  const file = req.params.fileId;
   if (!file) {
     return res.status(400).send('<p>Bad Request</p>');
   }

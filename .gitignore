@@ -60,3 +60,5 @@ typings/
 # upload directories
 uploads/*
 
+# os file
+.DS_Store
