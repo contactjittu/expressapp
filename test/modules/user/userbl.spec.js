@@ -3,13 +3,13 @@
 const chai = require('chai');
 const expect = chai.expect;
 const request = require('supertest');
-const app = require('../../../server');
+const app = require('../../../app');
 const userModel = require('../../../modules/user/usermodel');
 
 let seedAdmin = {
 	firstName: 'Jitendra',
 	lastName: 'Kumar',
-	email: 'contactjittu@gmail.com',
+	email: 'admin@gmail.com',
 	password: '12345678',
 	role: 'admin'
 };
@@ -169,7 +169,7 @@ describe('/Users API', () => {
 });
 
 after((done) => {
-	userModel.User.remove({ 'email': seedAdmin.email }, err => {
+	userModel.User.deleteOne({ 'email': seedAdmin.email }, err => {
 		if(err){
 			return done(err);
 		}

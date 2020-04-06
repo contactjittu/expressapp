@@ -1,7 +1,7 @@
 before_script:
   - npm install;
 script:
-  - npm start
+  - npm test
 language: node_js
 env:
   - SECRET = $SECRET
