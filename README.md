@@ -1,6 +1,8 @@
 # expressapp
 > User Authentication using JWT JSON WebToken in Node.js using Express, Used Joi for user input validation, mongoose for ORM, Winston for error logging, Nodemailer for send email after crashing the Server, memory-cache for caching the data on RAM, also used redis for caching(updated)
 
+[![Build Status](https://travis-ci.org/contactjittu/expressapp.svg?branch=master)](https://travis-ci.org/contactjittu/expressapp)
+
 ## Installation
 
 	npm install

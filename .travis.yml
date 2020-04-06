@@ -1,5 +1,5 @@
 before_script:
-  - npm install; npm install -g mocha
+  - npm install; npm install -g mocha supertest chai
 script:
   - npm test
 language: node_js
