@@ -4,7 +4,17 @@ script:
   - npm start
 language: node_js
 env:
-  - PORT = 3000
+  - SECRET = $SECRET
+  - PORT = $PORT
+  - MONGO_URI = $MONGO_URI
+  - NODE_ENV = $NODE_ENV
+  - EMAIL_ID = $EMAIL_ID
+  - EMAIL_PWD = $EMAIL_PWD
+  - REDIS_HOST = $REDIS_HOST
+  - REDIS_PASSWD = $REDIS_PASSWD
+  - REDIS_PORT = $REDIS_PORT
+  - CACHE_DURATION = $CACHE_DURATION
+  - SWAGGER_URL = $SWAGGER_URL
 node_js:
   - "8"
   - "10.19"
