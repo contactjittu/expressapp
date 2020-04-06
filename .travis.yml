@@ -5,7 +5,7 @@ script:
 language: node_js
 env:
   - SECRET = $SECRET
-  - PORT = $PORT
+  - PORT = PORT
   - MONGO_URI = $MONGO_URI
   - NODE_ENV = $NODE_ENV
   - EMAIL_ID = $EMAIL_ID
